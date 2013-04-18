@@ -264,6 +264,16 @@ var Parser = {
     return request;
   },
 
+  calculateHeatbarData: function Parser_calculateHeatbarData(threadId, options) {
+    var request = new WorkerRequest(gParserWorker);
+    request.send("calculateHeatbarData", {
+      profileID: 0,
+      threadId: threadId,
+      options: options,
+    });
+    return request;
+  },
+
   calculateDiagnosticItems: function Parser_calculateDiagnosticItems(meta, threadId) {
     var request = new WorkerRequest(gParserWorker);
     request.send("calculateDiagnosticItems", {

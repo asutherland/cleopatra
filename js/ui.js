@@ -325,7 +325,7 @@ ProfileTreeManager.prototype = {
           functionName: functionObj.functionName,
           libraryName: functionObj.libraryName,
           lineInformation: useFunctions ? "" : symbols[node.name].lineInformation
-        };  
+        };
         curObj.name = (info.functionName + " " + info.lineInformation).trim();
         curObj.library = info.libraryName;
         curObj.isJSFrame = functionObj.isJSFrame;
@@ -345,7 +345,7 @@ ProfileTreeManager.prototype = {
         return {
           getData: function () {
             if (!createdNode) {
-              createdNode = createTreeViewNode(child, parent); 
+              createdNode = createTreeViewNode(child, parent);
             }
             return createdNode;
           }
@@ -772,14 +772,14 @@ function uploadProfile(selected) {
   Parser.getSerializedProfile(!selected, function (dataToUpload) {
     var oXHR = new XMLHttpRequest();
     oXHR.onload = function (oEvent) {
-      if (oXHR.status == 200) {  
+      if (oXHR.status == 200) {
         gReportID = oXHR.responseText;
         updateDocumentURL();
         document.getElementById("upload_status").innerHTML = "Success! Use this <a id='linkElem'>link</a>";
         document.getElementById("linkElem").href = document.URL;
-      } else {  
+      } else {
         document.getElementById("upload_status").innerHTML = "Error " + oXHR.status + " occurred uploading your file.";
-      }  
+      }
     };
     oXHR.onerror = function (oEvent) {
       document.getElementById("upload_status").innerHTML = "Error " + oXHR.status + " occurred uploading your file.";
@@ -819,7 +819,7 @@ function populate_skip_symbol() {
     elOptNew.value = gSkipSymbols[i];
     elSel.add(elOptNew);
   }
-    
+
 }
 
 function delete_skip_symbol() {
@@ -827,7 +827,7 @@ function delete_skip_symbol() {
 }
 
 function add_skip_symbol() {
-  
+
 }
 
 var gFilterChangeCallback = null;
@@ -843,17 +843,17 @@ function filterOnChange() {
 function filterUpdate() {
   gFilterChangeCallback = null;
 
-  filtersChanged(); 
+  filtersChanged();
 
   var filterNameInput = document.getElementById("filterName");
   if (filterNameInput != null) {
     changeFocus(filterNameInput);
-  } 
+  }
 }
 
 function changeWorseResponsiveness(res) {
   Parser.changeWorseResponsiveness(res);
-  filterUpdate();  
+  filterUpdate();
 }
 
 // Maps document id to a tooltip description
@@ -873,7 +873,7 @@ var tooltip = {
 
 function addTooltips() {
   for (var elemId in tooltip) {
-    var elem = document.getElementById(elemId); 
+    var elem = document.getElementById(elemId);
     if (!elem)
       continue;
     if (elem.parentNode.nodeName.toLowerCase() == "label")
@@ -956,7 +956,7 @@ InfoBar.prototype = {
     //infoText += "<select size=8 id='skipsymbol'></select><br />"
     //infoText += "<input type='button' id='delete_skipsymbol' value='Delete'/><br />\n";
     //infoText += "<input type='button' id='add_skipsymbol' value='Add'/><br />\n";
-    
+
     infobar.innerHTML = infoText;
     addTooltips();
 
@@ -1126,7 +1126,7 @@ function loadProfileURL(url) {
       loadRawProfile(subreporters.parsing, xhr.responseText, url);
     }
   };
-  xhr.onerror = function (e) { 
+  xhr.onerror = function (e) {
     subreporters.fileLoading.begin("Error fetching profile :(. URL: '" + url + "'. Did you set the CORS headers?");
   }
   xhr.onprogress = function (e) {
@@ -1161,7 +1161,7 @@ function loadRawProfile(reporter, rawProfile, profileId) {
   }
   var startTime = Date.now();
   var parseRequest = Parser.parse(rawProfile, {
-    appendVideoCapture : gAppendVideoCapture,  
+    appendVideoCapture : gAppendVideoCapture,
     profileId: profileId,
   });
   gVideoCapture = null;
@@ -1218,7 +1218,7 @@ function importFromAddonFinish(rawProfile) {
 var gShowFrames = false;
 function toggleShowFrames() {
   gShowFrames = !gShowFrames;
-  filtersChanged(); 
+  filtersChanged();
 }
 
 var gInvertCallstack = false;
@@ -1233,13 +1233,13 @@ function toggleInvertCallStack() {
 var gMergeUnbranched = false;
 function toggleMergeUnbranched() {
   gMergeUnbranched = !gMergeUnbranched;
-  viewOptionsChanged(); 
+  viewOptionsChanged();
 }
 
 var gMergeFunctions = true;
 function toggleMergeFunctions() {
   gMergeFunctions = !gMergeFunctions;
-  filtersChanged(); 
+  filtersChanged();
 }
 
 var gJankOnly = false;
@@ -1535,7 +1535,7 @@ function changeFocus(elem) {
 }
 
 function comparator_receiveSelection(snapshot, frameData) {
-  gTreeManager.restoreSerializedSelectionSnapshot(snapshot); 
+  gTreeManager.restoreSerializedSelectionSnapshot(snapshot);
   if (frameData)
     gTreeManager.highlightFrame(frameData);
   viewOptionsChanged();
@@ -1576,13 +1576,36 @@ function filtersChanged() {
   });
 
   for (var threadId in gThreadsDesc) {
+    var visOptions = {
+      timelineVis: 'heatbar'
+    };
+
     var options = {
       showPowerInfo: gShowPowerInfo,
+      // 1 pixel per bin, allow 40 pixels for labels...
+      bins: gHistogramContainer.getContainer().clientWidth - 40,
     };
-    var histogramRequest = Parser.calculateHistogramData(gShowMissedSample, options, threadId);
-    histogramRequest.addEventListener("finished", function (data) {
+
+    var request;
+    switch (visOptions.timelineVis) {
+      case 'histogram':
+        request = Parser.calculateHistogramData(
+                    gShowMissedSample, options, threadId);
+        break;
+
+      case 'heatbar':
+        request = Parser.calculateHeatbarData(threadId, options);
+        break;
+    }
+
+    request.addEventListener("finished", function (data) {
+      if (data.debugData)
+        console.log('DEBUG DATA:', data.debugData);
+
       start = Date.now();
-      gHistogramContainer.display(data.threadId, data.histogramData, data.frameStart, data.widthSum, gHighlightedCallstack);
+      gHistogramContainer.display(
+        data.threadId, data.histogramData, data.frameStart, data.widthSum,
+        gHighlightedCallstack);
       if (gFrameView)
         gFrameView.display(data.histogramData, data.frameStart, data.widthSum, gHighlightedCallstack);
       console.log("histogram displaying: " + (Date.now() - start) + "ms.");

@@ -29,7 +29,8 @@ HistogramContainer.prototype = {
       threadHistogramDescriptionContainer.innerHTML = thread.name;
       threadHistogramDescriptionContainer.title = "Thread Name";
 
-      thread.threadHistogramView = new HistogramView(thread.name);
+      //thread.threadHistogramView = new HistogramView(thread.name);
+      thread.threadHistogramView = new HeatbarView(thread.name);
       thread.threadHistogramView.threadId = threadId;
       var currCell = currRow.insertCell(1);
       currCell.appendChild(thread.threadHistogramView.getContainer());
@@ -55,7 +56,7 @@ HistogramContainer.prototype = {
       var thread = this._threadsDesc[threadId];
       thread.diagnosticBar.hide();
     }
-    this._threadsDesc[diagnosticThreadId].diagnosticBar.display(diagnosticItems); 
+    this._threadsDesc[diagnosticThreadId].diagnosticBar.display(diagnosticItems);
   },
   dataIsOutdated: function HistogramContainer_dataIsOutdated() {
     for (var threadId in this._threadsDesc) {
@@ -66,7 +67,7 @@ HistogramContainer.prototype = {
   },
   showVideoFramePosition: function HistogramContainer_showVideoFramePosition(frame) {
     // Only supported on the main thread ATM
-    this._threadsDesc[0].threadHistogramView.showVideoFramePosition(frame); 
+    this._threadsDesc[0].threadHistogramView.showVideoFramePosition(frame);
   },
   highlightedCallstackChanged: function HistogramContainer_highlightedCallstackChanged(highlightedCallstack) {
     for (var threadId in this._threadsDesc) {
@@ -83,7 +84,7 @@ HistogramContainer.prototype = {
     this._threadsDesc[threadId].threadHistogramView.display(histogramData, frameStart, widthSum, highlightedCallstack);
   },
   updateInfoBar: function HistogramContainer_updateInfoBar() {
-    thread.infoBar.display(); 
+    thread.infoBar.display();
   },
   histogramSelected: function HistogramContainer_histogramSelected(view, selected_cb) {
     if (gSelectedThreadId != view.threadId) {
@@ -165,7 +166,7 @@ HistogramView.prototype = {
     return Math.ceil(minWidth / this._widthSum);
   },
   histogramClick: function HistogramView_histogramClick(index) {
-    var sample = this._histogramData[index]; 
+    var sample = this._histogramData[index];
     var frames = sample.frames;
     var list = gSampleBar.setSample(frames[0]);
     // Select the timeline now
@@ -499,6 +500,6 @@ function videoPaneTimeChange(video) {
   //var frameStart = gMeta.frameStart[frame];
   //var frameEnd = gMeta.frameStart[frame+1]; // If we don't have a frameEnd assume the end of the profile
 
-  gHistogramContainer.showVideoFramePosition(frame); 
+  gHistogramContainer.showVideoFramePosition(frame);
 }
 

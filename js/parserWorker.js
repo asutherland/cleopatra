@@ -1,6 +1,7 @@
 /* -*- Mode: js2; indent-tabs-mode: nil; js2-basic-offset: 2; -*- */
 
 importScripts("ProgressReporter.js");
+importScripts("parserWorker-heatmap.js");
 
 var gProfiles = [];
 
@@ -130,6 +131,10 @@ self.onmessage = function (msg) {
         break;
       case "calculateDiagnosticItems":
         calculateDiagnosticItems(requestID, taskData.profileID, taskData.meta, taskData.threadId);
+        break;
+      case "calculateHeatbarData":
+        calculateHeatmapData(requestID, taskData.profileID, taskData.threadId,
+                             taskData.options);
         break;
       case "changeWorseResponsiveness":
         kDelayUntilWorstResponsiveness = taskData.res;
@@ -1115,10 +1120,10 @@ function filterByName(samples, symbols, functions, filterName, useFunctions) {
     if (!sample)
       continue;
     var callstack = sample.frames;
-    for (var j = 0; j < callstack.length; ++j) { 
+    for (var j = 0; j < callstack.length; ++j) {
       var symbolOrFunctionName = getSymbolOrFunctionName(callstack[j], useFunctions);
       var libraryName = getLibraryName(callstack[j], useFunctions);
-      if (symbolOrFunctionName.toLowerCase().indexOf(filterName) != -1 || 
+      if (symbolOrFunctionName.toLowerCase().indexOf(filterName) != -1 ||
           libraryName.toLowerCase().indexOf(filterName) != -1) {
         continue calltrace_it;
       }
@@ -1282,7 +1287,7 @@ function findTimelineStart(profileID) {
     var thread = profile.filteredThreadSamples[threadID];
     if (thread == null)
       continue;
-    if (thread[0].extraInfo.time && 
+    if (thread[0].extraInfo.time &&
         (min == null || thread[0].extraInfo.time < min)) {
       min = thread[0].extraInfo.time;
     }
@@ -1302,7 +1307,7 @@ function findTimelineEnd(profileID) {
     if (thread == null)
       continue;
     var len = thread.length;
-    if (thread[len-2].extraInfo.time && 
+    if (thread[len-2].extraInfo.time &&
         (max == null || thread[len-2].extraInfo.time > max)) {
       max = thread[len-2].extraInfo.time;
     }
@@ -1342,7 +1347,7 @@ function calculateHistogramData(requestID, profileID, showMissedSample, options,
   var data = profile.filteredThreadSamples[threadId];
   var expectedInterval = null;
   if (showMissedSample === true && profile.meta && profile.meta.interval) {
-    expectedInterval = profile.meta.interval; 
+    expectedInterval = profile.meta.interval;
   }
   //var start = findTimelineStart(profileID);
   //var end = findTimelineEnd(profileID);
@@ -1438,13 +1443,13 @@ var diagnosticList = [
       if (!stepContains('TISCreateInputSourceList', frames, symbols))
         return false;
 
-      return stepContains('__getdirentries64', frames, symbols) 
-          || stepContains('__read', frames, symbols) 
-          || stepContains('__open', frames, symbols) 
-          || stepContains('__unlink', frames, symbols) 
-          || stepEquals('read', frames, symbols) 
-          || stepEquals('write', frames, symbols) 
-          || stepEquals('fsync', frames, symbols) 
+      return stepContains('__getdirentries64', frames, symbols)
+          || stepContains('__read', frames, symbols)
+          || stepContains('__open', frames, symbols)
+          || stepContains('__unlink', frames, symbols)
+          || stepEquals('read', frames, symbols)
+          || stepEquals('write', frames, symbols)
+          || stepEquals('fsync', frames, symbols)
           || stepContains('stat$INODE64', frames, symbols)
           ;
     },
@@ -1666,8 +1671,8 @@ var diagnosticList = [
     image: "plugin.png",
     title: "Sync Plugin Constructor",
     check: function(frames, symbols, meta) {
-      return stepContains('CallPPluginInstanceConstructor', frames, symbols) 
-          || stepContains('CallPCrashReporterConstructor', frames, symbols) 
+      return stepContains('CallPPluginInstanceConstructor', frames, symbols)
+          || stepContains('CallPCrashReporterConstructor', frames, symbols)
           || stepContains('PPluginModuleParent::CallNP_Initialize', frames, symbols)
           || stepContains('GeckoChildProcessHost::SyncLaunch', frames, symbols)
           ;
@@ -1684,16 +1689,16 @@ var diagnosticList = [
     image: "io.png",
     title: "Main Thread IO!",
     check: function(frames, symbols, meta) {
-      return stepContains('__getdirentries64', frames, symbols) 
-          || stepContains('__open', frames, symbols) 
-          || stepContains('NtFlushBuffersFile', frames, symbols) 
-          || stepContains('storage:::Statement::ExecuteStep', frames, symbols) 
-          || stepContains('__unlink', frames, symbols) 
-          || stepContains('fsync', frames, symbols) 
+      return stepContains('__getdirentries64', frames, symbols)
+          || stepContains('__open', frames, symbols)
+          || stepContains('NtFlushBuffersFile', frames, symbols)
+          || stepContains('storage:::Statement::ExecuteStep', frames, symbols)
+          || stepContains('__unlink', frames, symbols)
+          || stepContains('fsync', frames, symbols)
           || stepContains('stat$INODE64', frames, symbols)
-          || stepEquals('read', frames, symbols) 
-          || stepEquals('write', frames, symbols) 
-          || stepEquals('fsync', frames, symbols) 
+          || stepEquals('read', frames, symbols)
+          || stepEquals('write', frames, symbols)
+          || stepEquals('fsync', frames, symbols)
           ;
     },
   },

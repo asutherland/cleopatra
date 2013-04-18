@@ -1,0 +1,110 @@
+{
+  "style": {
+    "regexes": {
+      "^mozilla::css::": 8,
+      "nsCSS": 3,
+      "nsStyle": 3
+    }
+  },
+  "layout": {
+    "regexes": {
+      "^mozilla::Frame": 6,
+      "^nsBlock": 6,
+      "^nsCSSRendering": 5,
+      "^nsXUL": 5,
+      "^nsLayout": 5,
+      "^nsTable": 5,
+      "^nsTextFrame::": 5,
+      "^nsBoxFrame::": 5,
+      "^nsLineFrame::": 5,
+      "^PresShell::": 3
+    }
+  },
+  "dom": {
+    "regexes": {
+      "^mozilla::dom::": 4,
+      "^nsIDOM": 5,
+      "^nsDOM": 5,
+      "^nsHTML": 5,
+      "^nsXML": 5,
+      "^nsGeneric": 5,
+      "^nsINode::": 5,
+      "^nsText": 3
+    }
+  },
+  "paint": {
+    "regexes": {
+      "^mozilla::layers::": 10,
+      "^mozilla::image::": 10,
+      "^gralloc::": 6,
+      "^nsDisplay": 6,
+      "^nsTransition": 6,
+      "^nsRegion": 5,
+      "^nsGfx": 5,
+      "^nsFrame::": 5,
+      "^nsIFrame::": 5,
+      "^img": 4,
+      "nsIFrame": 3
+    }
+  },
+  "js": {
+    "regexes": {
+      "^js::": 8,
+      "^[Jj][Ss]": 6
+    }
+  },
+  "regex": {
+    "regexes": {
+      "^js::regexp": 9,
+      "^JSC::": 10
+    }
+  },
+  "network": {
+    "regexes": {
+      "^nsSocket": 8
+    }
+  },
+  "ipc": {
+    "regexes": {
+      "^IPC::": 8,
+      "^mozilla::ipc::": 8,
+      "^mozilla::plugins::": 8,
+      "^mozilla::dom::P": 6
+    }
+  },
+  "indexedDB": {
+    "regexes": {
+      "^mozilla::dom::indexedDB::": 10,
+      "^sqlite3": 8,
+      "^mozilla::storage::": 6
+    }
+  },
+  "xpconnect": {
+    "regexes": {
+      "^(?:xpc|XPC|nsXP)": 6
+    }
+  },
+  "worker": {
+    "regexes": {
+      "^mozilla::dom::workers::": 10
+    }
+  },
+  "crypto": {
+    "regexes": {
+      "/libssl3\\.\\)$": 6,
+      "/libnss3\\.so\\)$": 6
+    }
+  },
+  "kernel": {
+    "regexes": {
+      "^futex_wait ": 10,
+      " \\(in \\[kernel\\]\\)$": 6
+    }
+  },
+  "GC": {
+    "regexes": {
+      "^nsJSContext::GarbageCollectNow": 11,
+      "^nsCycleCollector::": 10
+    }
+  }
+}
